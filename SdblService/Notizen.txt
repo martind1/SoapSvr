@@ -1,0 +1,220 @@
+﻿30.07.22 Soap
+--------
+todo(4h)
+= Endprojekt: SdblService
+- Problem (kein Fehlerabbruch): System.UnauthorizedAccessException
+- Abhilfe: VS als Administrator starten
+  - Zusammenhang mit DataService?: Nein
+->ignorieren  
+
+= Deploy SdblService on Blacki IIS:
+- https://www.tutorialspoint.com/how-to-host-a-web-service-using-iis-windows-and-net
+> Sites >Add Web Site
+- Port: 50577
+- Hostname: leer
+- Test: http://192.168.178.48:50577/SdblService.asmx
+  enjoy
+  
+- Problem IIS und VS: bei wiederholtam DataService:
+    Diese Eigenschaft kann nicht festgelegt werden, nachdem eine Verbindung geöffnet wurde
+> Exception thrown: 'System.InvalidOperationException' in Oracle.ManagedDataAccess.dll    
+- https://docs.microsoft.com/de-de/dotnet/api/system.data.oracleclient.oraclecommand.connection?view=netframework-4.8
+- Ursache:
+  Oracle.ManagedDataAccess.Client.OracleConfiguration.LoadBalancing = false; in constructor
+  Lsg: einmalig zuweisen:
+  - https://it.inf.unideb.hu/oracle/odpnt/InstallCoreConfiguration.html#GUID-24C963AE-F20B-44B5-800C-594CA06BD24B
+
+
+- Info Oracle sonst
+https://www.oracle.com/webfolder/technetwork/tutorials/obe/db/12c/r1/appdev/dotnet/Web_version_Fully_Managed_ODPnet_OBE/odpnetmngdrv.html
+
+
+- Allgemein:
+  Web services(.asmx) and WCF(.svc) are not supported by Microsoft anymore!
+   .Net core/Standards do not have any support for web services.
+  https://docs.microsoft.com/en-us/answers/questions/689694/does-web-servicesasmx-and-wcfsvc-are-not-supported.html
+  You can try WCF alternatives: gRPC, CoreWCF and ASP.NET Core MVC
+- NET Core and . NET 5 support calling WCF services, but won't offer server-side support for hosting WCF.
+  https://docs.microsoft.com/en-us/aspnet/core/grpc/why-migrate-wcf-to-dotnet-grpc?view=aspnetcore-6.0  
+
+= Evaluierung: CoreWCF
+  https://github.com/CoreWCF/CoreWCF
+  Beispiel:
+  https://github.com/CoreWCF/samples/tree/main/Scenarios/Getting-Started-with-CoreWCF/NetCoreServer
+  - Projekt: d:\Blazor\SoapSvr\SdblCore\NetCoreServer.csproj
+-> noch buggy. WSDL Erzeugung Fehlerhaft
+
+
+29.07.22 Soap
+--------
+todo(5h)
+= Database Projekt - SdblDB:
+- NEIN nuget: Oracle.ManagedDataAcces (ohne .Core)
+- Microsoft OracleClient to ODP.NET:
+  https://www.oracle.com/topics/technologies/dotnet/msoc-migration-installation.html
+- Oracle Installer:
+- Oracle Developer Tools for Visual Studio 2019: geht das auch für 2022? eher nicht
+- Oracle Demos auf Github:
+  https://github.com/oracle/dotnet-db-samples
+
+- Baue einfaches Oracle DB Projekt:
+- https://www.oracle.com/database/technologies/appdev/dotnet.html
+  ODP.NET Managed Driver:
+  - https://www.oracle.com/database/technologies/appdev/dotnet.html?ytid=gWpx9vBqr-Q
+- Brauche DOTNET 4.7.2 wg MathSoap
+- NuGet: OracleManagedDataAccess
+
+- Probleme mit C# Version
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+- Problem nach Dupl:_
+    <customErrors mode="On"/>
+
+- Projekt: SdblService. Kopie von MathService
+- Problem: nicht gefunden: OracleManagedDataAccess
+  Abhilfe: System.Data.OracleClient
+
+
+28.07.22 Soap
+--------
+todo(5h)
+= Database Projekt - SdblDB:
+- Benötigte Tabellen und Felder:
+  - HANDELSPRODUKTE_WEB
+    - *HANDELSBEZEICHNUNG
+    - INTERNET_KNZ ('J', 'N')
+    - MINERAL
+    - BESCHICHTUNG ('beschichtet', 'unbeschichtet')
+    - KOERNUNG ('Granulat', 'Mehl', Sand')
+  - DOKUMENTE_WEB
+    - *HSPW_ID
+    - *SPRACHE ('BG', 'CZ', 'DA', 'DE', 'EL', 'EN', 'ES', 'FI', 'FR', 'HR', 'HU', 'IT', 'KO', 'NL', 'NO', 'PL', 'PT', 'RO', 'RU', 'SK', 'SL', 'SV', 'TR', 'UK', 'US', 'ZH')
+    - DOKU_TYP ('P' = PDF)
+    - DOKU_DATA (das PDF)
+
+- Format:nur PDF   Frage:auch HTML? NEIN
+
+- NEIN VS: new Item >DataSet
+    dient zum Binden von Windows Forms-Steuerelementen an Daten in Visual Studio.
+
+- Jetzt: eigene Class 'DataService'
+  mit hardcodierten DB und SQL Befehlen.
+  - https://docs.microsoft.com/de-de/dotnet/framework/data/adonet/ado-net-code-examples
+
+- Schnittstelle:
+- Methode:
+
+- SOAP: Wie werden FAULT Fehler generiert:?
+
+- Problem: FAULT enthält noch Stack Trace -
+  Lsg?: Change this from: <customErrors mode="Off" /> <customErrors mode="RemoteOnly" />
+     OR <customErrors mode="On" /> This will prevent a deep stack dump.
+     Your web.config file will provide a detailed explanation
+
+
+
+26.07.22 Soap
+--------
+todo(5h)
+= Deploy on Blacki IIS:
+  https://www.tutorialspoint.com/how-to-host-a-web-service-using-iis-windows-and-net
+> Sites >Add Web Site
+- Port: 50477
+- Enable Directory Browsing! - setup in Windows Features!
+
+- Schneider:
+  den neuen WEB-Server habe ich fertiggestellt und ist wie folgt zu erreichen:
+  Name: All-SDBL-WEB
+  IP: 10.106.128.81
+  Lokale Admin: Adminwandzik und Dambach
+  Remotedesktopuser: Adminwandzik und Dambach
+  vom „Jumphost“ anmelden
+
+- Am All-SDBL-WEB:
+  >IIS Serverrollen:
+  + IIS Verwaltungsskripts und Tools (fehlte)
+- Problem: HTTP-Fehler 404.3 - Not Found
+  Ursache: Wenn ASP.NET nicht installiert ist
+- Lsg: https://www.webhosting.uk.com/kb/iis-http-error-404-3-not-found-add-a-mime-map/
+  + IIS >Verwaltungsdienst fehlte (ASP)!
+
+= Database Projekt - SdblDB:
+
+
+
+25.07.22 Soap
+--------
+todo(5h)
+= Web Platform Installer:
+  https://www.microsoft.com/web/downloads/platform.aspx ->Download
+  https://docs.microsoft.com/de-de/aspnet/web-forms/overview/deployment/visual-studio-web-deployment/deploying-to-iis
+  Default Web Site/MathService.asmx
+- VS Publish:
+- http://localhost/MathService.asmx
+- Problem:
+  Serverfehler in der Anwendung /MathService.asmx.
+
+
+25.07.22 Soap
+--------
+todo(4h)  am So,24.07.22
+= c# Create Soap Web Service
+- Anforderung:
+  d:\Mailbox\QwFrech\Wandzik\202207 SDBL SOAP Server\2022-03-29_Techn Spez_01-SDB Export_RZ1.docx
+
+- Info:
+  https://www.delftstack.com/de/howto/csharp/csharp-create-soap-service/
+
+- >Project >Add Service Reference >WCF: nein, nur für Client
+
+- Lösung: fehlendes VS Teil:
+  https://www.howtosolutions.net/2021/11/visual-studio-missing-asp-net-web-application-template-dotnet-framework/
+  - Installer: Einzelne Komponente:
+    .Net Projekt und Item Templates
+  und dann:
+  - >neues Projekt >ASP.NET Web Application (.NET Framework) >leeres Projekt
+  - >Project >Add >New Item >ASMX
+    https://social.msdn.microsoft.com/Forums/sqlserver/en-US/8080ed27-3ebf-493d-8faf-e74b8480ddd4/cannot-find-web-service-template?forum=vssetup
+- Für Oberfläche evtl: >Add >Item >Web Form
+
+- more Information:
+  https://go.microsoft.com/fwlink/?LinkId=169433
+  https://docs.microsoft.com/en-us/previous-versions/ff400235(v=vs.100)?redirectedfrom=MSDN
+- Problem:
+  https://localhost:44380/MathService.asmx: Verweis auf WebService1
+- Lsg:
+- Works:
+  https://localhost:44380/MathService.asmx
+
+- Standardnamespace (http://tempuri.org/) ->
+  targetNamespace="http://dbsoft.de/SoapSvr/MathServices/"
+  (SAP: targetNamespace="urn:sap-com:document:sap:rfc:functions")
+
+- Publish:
+  https://docs.microsoft.com/de-de/visualstudio/deployment/tutorial-import-publish-settings-iis?view=vs-2022
+- Erstellen Sie ein Bereitstellungspaket, und installieren Sie es mithilfe des IIS-Managers:
+- benötige MsDeploy.exe:
+  https://go.microsoft.com/?linkid=9278654
+- Problem: ERROR_SITE_DOES_NOT_EXIST
+  Lsg?: checking “Take App Offline” option
+
+
+= Alternative Lösung mit ASP.NET Core:
+- Custom ASP.NET Core Middleware Example
+  https://devblogs.microsoft.com/dotnet/custom-asp-net-core-middleware-example/
+  GIT: - mit Einbindung in WebApp (Blazor?)
+  https://github.com/DigDes/SoapCore
+- und:
+  https://stackify.com/soap-net-core/
+  GIT:
+  https://github.com/DigDes/SoapCore
+
+
+
+20.07.22 Soap
+--------
+todo(1h)
+= c# Create Soap Web Service
+- https://docs.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/write-web-service
+- IIS blacki aktivieren:
+  https://www.tutorialspoint.com/how-to-host-a-web-service-using-iis-windows-and-net

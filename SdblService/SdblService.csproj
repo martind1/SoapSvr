@@ -97,6 +97,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Notizen.txt" />
     <Content Include="Web.config" />
     <Content Include="SdblService.asmx" />
   </ItemGroup>
