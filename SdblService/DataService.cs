@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
+using System.Configuration;
 
 namespace SdblDB
 {
@@ -39,7 +40,8 @@ namespace SdblDB
                 Oracle.ManagedDataAccess.Client.OracleConfiguration.LoadBalancing = false;
                 Oracle.ManagedDataAccess.Client.OracleConfiguration.HAEvents = false;
             }
-            conString = $"Data Source={descriptor};Persist Security Info=True;User ID=sdbl;Password=sdbl";
+            //conString = $"Data Source={descriptor};Persist Security Info=True;User ID=sdbl;Password=sdbl";
+            conString = ConfigurationManager.ConnectionStrings["SdblConnectionString"].ConnectionString;
         }
 
         public string UploadSDB(string Handelsbezeichnung)
