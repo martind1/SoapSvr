@@ -19,71 +19,89 @@ namespace SdblService
     // [System.Web.Script.Services.ScriptService]
     public class SdblService : System.Web.Services.WebService
     {
+        private AppService App { get; set; }
         private DataService Data { get; set; }
 
         public SdblService()
         {
-            System.Diagnostics.Debug.WriteLine("New SdblService");
+            App = new AppService();
+            App.Prot0("New SdblService");
             Data = new DataService();
         }
 
         [WebMethod]
-        public int Add(int a, int b)
+        public string UploadSDB(
+            string HANDELSBEZEICHNUNG,
+            string SPRACHE,
+            string DOKU_TYP,
+            string LOESCH_KNZ,
+            string INTERNET_KNZ,
+            string MINERAL,
+            string BESCHICHTUNG,
+            string KOERNUNG,
+            string SDB_BASE64)
         {
             string s;
-            s = Data.UploadSDB($"{a} + {b}");
-            System.Diagnostics.Debug.WriteLine($"{a} + {b}");
-            if (s == "OK")
-                return 1;
-            else
-                return (a + b);
-        }
-        [WebMethod]
-        public System.Single Subtract(System.Single A, System.Single B)
-        {
-            return (A - B);
-        }
-        [WebMethod]
-        public System.Single Multiply(System.Single A, System.Single B)
-        {
-            return A * B;
-        }
-        [WebMethod]
-        public System.Single Divide(System.Single A, System.Single B)
-        {
-            if (B == 0)
+            App.Prot0($"UploadSDB(Han:{HANDELSBEZEICHNUNG}, Doktyp:{DOKU_TYP})");
+            if (String.IsNullOrEmpty(HANDELSBEZEICHNUNG))
             {
-                //return -1; 
-                // Build the detail element of the SOAP fault.
-                System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
-                System.Xml.XmlNode node = doc.CreateNode(XmlNodeType.Element, SoapException.DetailElementName.Name, SoapException.DetailElementName.Namespace);
-
-                /*
-                // Build specific details for the SoapException.
-                // Add first child of detail XML element.
-                System.Xml.XmlNode details = doc.CreateNode(XmlNodeType.Element, "mySpecialInfo1", "http://dbsoft.de/SoapSvr/SdblService/");
-                System.Xml.XmlNode detailsChild = doc.CreateNode(XmlNodeType.Element, "childOfSpecialInfo", "http://dbsoft.de/SoapSvr/SdblService/");
-                details.AppendChild(detailsChild);
-
-
-                // Add second child of detail XML element with an attribute.
-                System.Xml.XmlNode details2 = doc.CreateNode(XmlNodeType.Element, "mySpecialInfo2", "http://dbsoft.de/SoapSvr/SdblService/");
-                XmlAttribute attr = doc.CreateAttribute("t", "attrName", "http://dbsoft.de/SoapSvr/SdblService/");
-                attr.Value = "attrValue";
-                details2.Attributes.Append(attr);
-
-                // Append the two child elements to the detail node.
-                node.AppendChild(details);
-                node.AppendChild(details2);
-                */
-
-                //Throw the exception.    
-                //SoapException se = new SoapException("Fault occurred", SoapException.ClientFaultCode, Context.Request.Url.AbsoluteUri, node);
-                SoapException se = new SoapException("Division durch 0", new XmlQualifiedName("C01"));
-
-                throw se;
+                App.EError("E01", "Handelsbezeichnung darf nicht leer sein");
             }
-            return Convert.ToSingle(A / B);
+            if (String.IsNullOrEmpty(SPRACHE))
+            {
+                App.EError("E02", "Sprache darf nicht leer sein");
+            }
+            if (String.IsNullOrEmpty(INTERNET_KNZ))
+            {
+                App.EError("E03", "Internet_knz darf nicht leer sein");
+            }
+            if (String.IsNullOrEmpty(MINERAL))
+            {
+                App.EError("E04", "Mineral darf nicht leer sein");
+            }
+            if (String.IsNullOrEmpty(BESCHICHTUNG))
+            {
+                App.EError("E05", "Beschichtung darf nicht leer sein");
+            }
+            if (String.IsNullOrEmpty(DOKU_TYP))
+            {
+                DOKU_TYP = "P";
+            }
+            if (String.IsNullOrEmpty(LOESCH_KNZ))
+            {
+                LOESCH_KNZ = "N";
+            }
+            if (String.IsNullOrEmpty(SDB_BASE64))
+            {
+                if (LOESCH_KNZ != "J")
+                    App.EError("E06", "SDB_BASE64 darf nicht leer sein");
+            }
+            if (LOESCH_KNZ != "J")
+            {
+                s = Data.UploadSDB(new SdbData( HANDELSBEZEICHNUNG,
+                                                SPRACHE,
+                                                DOKU_TYP,
+                                                LOESCH_KNZ,
+                                                INTERNET_KNZ,
+                                                MINERAL,
+                                                BESCHICHTUNG,
+                                                KOERNUNG,
+                                                SDB_BASE64));
+            } else
+            {
+                s = Data.DeleteSDB(new SdbData( HANDELSBEZEICHNUNG,
+                                                SPRACHE,
+                                                DOKU_TYP,
+                                                LOESCH_KNZ,
+                                                INTERNET_KNZ,
+                                                MINERAL,
+                                                BESCHICHTUNG,
+                                                KOERNUNG,
+                                                SDB_BASE64));
+            }
+            return s;
         }
     }
+    //SoapException se = new SoapException("Division durch 0", new XmlQualifiedName("C01"));
+    //throw se;
 }
