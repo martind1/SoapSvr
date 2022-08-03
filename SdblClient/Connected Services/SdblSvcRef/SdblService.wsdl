@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://dbsoft.de/SoapSvr/SdblService/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://dbsoft.de/SoapSvr/SdblService/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://dbsoft.de/SoapSvr/SdblService/">
+      <s:element name="UploadSDB">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="HANDELSBEZEICHNUNG" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SPRACHE" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="DOKU_TYP" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="LOESCH_KNZ" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="INTERNET_KNZ" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="MINERAL" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="BESCHICHTUNG" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="KOERNUNG" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="SDB_BASE64" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UploadSDBResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UploadSDBResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="UploadSDBSoapIn">
+    <wsdl:part name="parameters" element="tns:UploadSDB" />
+  </wsdl:message>
+  <wsdl:message name="UploadSDBSoapOut">
+    <wsdl:part name="parameters" element="tns:UploadSDBResponse" />
+  </wsdl:message>
+  <wsdl:portType name="SdblServiceSoap">
+    <wsdl:operation name="UploadSDB">
+      <wsdl:input message="tns:UploadSDBSoapIn" />
+      <wsdl:output message="tns:UploadSDBSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SdblServiceSoap" type="tns:SdblServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UploadSDB">
+      <soap:operation soapAction="http://dbsoft.de/SoapSvr/SdblService/UploadSDB" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SdblServiceSoap12" type="tns:SdblServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="UploadSDB">
+      <soap12:operation soapAction="http://dbsoft.de/SoapSvr/SdblService/UploadSDB" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SdblService">
+    <wsdl:port name="SdblServiceSoap" binding="tns:SdblServiceSoap">
+      <soap:address location="http://192.168.178.48:50577/SdblService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SdblServiceSoap12" binding="tns:SdblServiceSoap12">
+      <soap12:address location="http://192.168.178.48:50577/SdblService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
