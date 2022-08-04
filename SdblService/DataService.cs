@@ -25,6 +25,10 @@ namespace SdblDB
         public string BESCHICHTUNG;
         public string KOERNUNG;
         public string SDB_BASE64;
+        //intern:
+        public double HSPW_ID;
+        public double DOKW_ID;
+        public byte[] DOKU_DATA;
 
         public SdbData( string aHANDELSBEZEICHNUNG,
                         string aSPRACHE,
@@ -68,10 +72,11 @@ namespace SdblDB
         }
 
         // ergibt true wenn Handelsbezeichnung in HANDELSPRODUKTE_WEB gefunden
-        private bool HanFound(SdbData data, OracleConnection con, out double fHSPW_ID)
+        // ergänzt data.HSPW_ID
+        private bool HanFound(ref SdbData data, OracleConnection con)
         {
             bool Result = false;
-            fHSPW_ID = 0;
+            data.HSPW_ID = 0;
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.BindByName = true;
@@ -85,8 +90,8 @@ namespace SdblDB
                     if (reader.Read())
                     {
                         Result = true;
-                        fHSPW_ID = reader.GetDouble(0);
-                        App.Prot0($"HanFound({data.HANDELSBEZEICHNUNG}):{Result} {fHSPW_ID}");
+                        data.HSPW_ID = reader.GetDouble(0);
+                        App.Prot0($"HanFound({data.HANDELSBEZEICHNUNG}):{Result} {data.HSPW_ID}");
                     }
                     else
                     {
@@ -99,7 +104,7 @@ namespace SdblDB
         } //HanFound
 
         // aktualisiert Handelsbezeichnung in HANDELSPRODUKTE_WEB 
-        private void HanUpdate(SdbData data, OracleConnection con, double fHSPW_ID)
+        private void HanUpdate(SdbData data, OracleConnection con)
         {
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -110,25 +115,27 @@ namespace SdblDB
                                         KOERNUNG = :KOERNUNG,
                                         BESCHICHTUNG = :BESCHICHTUNG
                                     WHERE HSPW_ID = :HSPW_ID";
-                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = fHSPW_ID;
+                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
                 cmd.Parameters.Add(":INTERNET_KNZ", OracleDbType.Char).Value = data.INTERNET_KNZ;
                 cmd.Parameters.Add(":MINERAL", OracleDbType.Varchar2).Value = data.MINERAL;
                 cmd.Parameters.Add(":KOERNUNG", OracleDbType.Varchar2).Value = data.KOERNUNG;
                 cmd.Parameters.Add(":BESCHICHTUNG", OracleDbType.Varchar2).Value = data.BESCHICHTUNG;
 
                 var rowCnt = cmd.ExecuteNonQuery();
-                if (rowCnt == 0) 
-                {   //update nicht erfolgt
-                    App.EError("E10", $"Interner Fehler bei HanUpdate({data.HANDELSBEZEICHNUNG})");
-                } else
+                if (rowCnt > 0) 
                 {
                     App.Prot0($"HanUpdate({data.HANDELSBEZEICHNUNG}):OK");
                 }
+                else
+                {
+                    //update nicht erfolgt
+                    App.EError("E10", $"Interner Fehler bei HanUpdate({data.HANDELSBEZEICHNUNG})");
+                }
             }
-        }
+        } //HanUpdate
 
         // fügt neue Handelsbezeichnung ein in HANDELSPRODUKTE_WEB 
-        private void HanInsert(SdbData data, OracleConnection con, out double fHSPW_ID)
+        private void HanInsert(ref SdbData data, OracleConnection con)
         {
             using (OracleCommand cmd = con.CreateCommand())
             {
@@ -150,18 +157,179 @@ namespace SdblDB
                     App.EError("E11", $"Interner Fehler bei HanInsert({data.HANDELSBEZEICHNUNG})");
                 }
             }
-            if (!HanFound(data, con, out fHSPW_ID))
+            if (!HanFound(ref data, con))
             {
                 //insert nicht gefunden
                 App.EError("E12", $"Interner Fehler bei HanInsert({data.HANDELSBEZEICHNUNG})");
             }
-            App.Prot0($"HanInsert({data.HANDELSBEZEICHNUNG}, {fHSPW_ID}):OK");
+            App.Prot0($"HanInsert({data.HANDELSBEZEICHNUNG}):OK  {data.HSPW_ID}");
+        } //HanInsert
+
+        // löscht Handelsbezeichnung in HANDELSPRODUKTE_WEB 
+        private void HanDelete(SdbData data, OracleConnection con)
+        {
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"delete from HANDELSPRODUKTE_WEB 
+                                    WHERE HSPW_ID = :HSPW_ID";
+                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
+
+                var rowCnt = cmd.ExecuteNonQuery();
+                if (rowCnt > 0)
+                {
+                    App.Prot0($"HanDelete({data.HANDELSBEZEICHNUNG}):OK");
+                }
+                else
+                {
+                    //delete nicht erfolgt
+                    App.EError("E10", $"Interner Fehler bei HanDelete({data.HANDELSBEZEICHNUNG})");
+                }
+            }
+        } //HanDelete
+
+        // ergibt true wenn Dokument in DOKUMENTE_WEB gefunden
+        // ergänzt data.DOKW_ID
+        private bool DokFound(ref SdbData data, OracleConnection con)
+        {
+            bool Result = false;
+            data.DOKW_ID = 0;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"SELECT DOKW_ID from DOKUMENTE_WEB 
+                                    WHERE DOKW_HSPW_ID = :HSPW_ID
+                                    AND SPRACHE = :SPRACHE
+                                    AND DOKU_TYP = :DOKU_TYP";
+                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
+                cmd.Parameters.Add(":SPRACHE", OracleDbType.Varchar2).Value = data.SPRACHE;
+                cmd.Parameters.Add(":DOKU_TYP", OracleDbType.Varchar2).Value = data.DOKU_TYP;
+
+                //cmd.ExecuteNonQuery();
+                using (IDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Result = true;
+                        data.DOKW_ID = reader.GetDouble(0);
+                        App.Prot0($"DokFound({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP}):{Result} {data.DOKW_ID}");
+                    }
+                    else
+                    {
+                        Result = false;
+                        App.Prot0($"DokFound({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP}):{Result}");
+                    }
+                }
+            }
+            return Result;
+        } //DokFound
+
+        // ergibt anzahl Dokumente zu einem Handelsprodukt
+        private int DokHanCount(SdbData data, OracleConnection con)
+        {
+            int Result = 0;
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"SELECT count(*) from DOKUMENTE_WEB 
+                                    WHERE DOKW_HSPW_ID = :HSPW_ID";
+                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
+                using (IDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Result = reader.GetInt32(0);
+                        App.Prot0($"DokHanCount({data.HANDELSBEZEICHNUNG}):{Result}");
+                    }
+                    else
+                    {
+                        App.EError("E32", $"Interner Fehler bei DokHanCount({data.HANDELSBEZEICHNUNG})");
+                    }
+                }
+            }
+            return Result;
+        } //DokHanCount
+
+        // aktualisiert Dokudata(PDF) in DOKUMENTE_WEB 
+        private void DokUpdate(SdbData data, OracleConnection con)
+        {
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"update DOKUMENTE_WEB 
+                                    set DOKU_DATA = :DOKU_DATA
+                                    WHERE DOKW_HSPW_ID = :DOKW_ID";
+                cmd.Parameters.Add(":DOKW_ID", OracleDbType.Double).Value = data.DOKW_ID;
+                cmd.Parameters.Add(":DOKU_DATA", OracleDbType.Blob).Value = data.DOKU_DATA;
+
+                var rowCnt = cmd.ExecuteNonQuery();
+                if (rowCnt > 0)
+                {   
+                    App.Prot0($"DokUpdate({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP}):OK");
+                }
+                else
+                {
+                    //update nicht erfolgt
+                    App.EError("E20", $"Interner Fehler bei DokUpdate({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP})");
+                }
+            }
         }
 
+        // fügt neue HSPW, Sprache, Dokutyp, Dokudata(PDF) ein in DOKUMENTE_WEB 
+        private void DokInsert(ref SdbData data, OracleConnection con)
+        {
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"insert into DOKUMENTE_WEB(DOKW_HSPW_ID, SPRACHE, DOKU_TYP, DOKU_DATA)
+                                    values(:HSPW_ID, :SPRACHE, :DOKU_TYP, :DOKU_DATA)";
+                cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
+                cmd.Parameters.Add(":DOKU_TYP", OracleDbType.Char).Value = data.DOKU_TYP;
+                cmd.Parameters.Add(":SPRACHE", OracleDbType.Varchar2).Value = data.SPRACHE;
+                cmd.Parameters.Add(":DOKU_DATA", OracleDbType.Blob).Value = data.DOKU_DATA;
+                cmd.Parameters.Add(":BEMERKUNG", OracleDbType.Varchar2).Value = "Insert by SdblService";
+
+                var rowCnt = cmd.ExecuteNonQuery();
+                if (rowCnt == 0)
+                {   //insert nicht erfolgt
+                    App.EError("E21", $"Interner Fehler bei DokInsert({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP})");
+                }
+            }
+            if (!DokFound(ref data, con))
+            {
+                //insert nicht gefunden
+                App.EError("E22", $"Interner Fehler bei DokInsert({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP})");
+            }
+            App.Prot0($"DokInsert({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP}):OK  {data.DOKW_ID}");
+        }
+
+        // löscht Dokument anhand ID in DOKUMENTE_WEB 
+        private void DokDelete(SdbData data, OracleConnection con)
+        {
+            using (OracleCommand cmd = con.CreateCommand())
+            {
+                cmd.BindByName = true;
+                cmd.CommandText = @"delete from DOKUMENTE_WEB 
+                                    WHERE DOKW_ID = :DOKW_ID";
+                cmd.Parameters.Add(":DOKW_ID", OracleDbType.Double).Value = data.DOKW_ID;
+
+                var rowCnt = cmd.ExecuteNonQuery();
+                if (rowCnt > 0)
+                {
+                    App.Prot0($"DokDelete({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP}):OK");
+                }
+                else
+                {
+                    //delete nicht erfolgt
+                    App.EError("E20", $"Interner Fehler bei DokDelete({data.DOKW_ID})");
+                }
+            }
+        }
+
+        // Hauptfunktion zum Upload:
         public string UploadSDB(SdbData data)
         {
             string result = "OK";
-            double fHSPW_ID;
             try
             {
                 App.Prot0("Open Connection");
@@ -169,10 +337,18 @@ namespace SdblDB
                 {
                     con.Open();
 
-                    if (HanFound(data, con, out fHSPW_ID))
-                        HanUpdate(data, con, fHSPW_ID); 
+                    //Pdf als byte[] anhand Base64 String:
+                    data.DOKU_DATA = Convert.FromBase64String(data.SDB_BASE64);
+
+                    if (HanFound(ref data, con))
+                        HanUpdate(data, con); 
                     else 
-                        HanInsert(data, con, out fHSPW_ID);
+                        HanInsert(ref data, con);
+
+                    if (DokFound(ref data, con))
+                        DokUpdate(data, con);
+                    else
+                        DokInsert(ref data, con);
                 }
             }
             catch (Exception ex)
@@ -187,8 +363,40 @@ namespace SdblDB
         public string DeleteSDB(SdbData data)
         {
             string result = "NOK";
-            return result;
-        }
+            try
+            {
+                App.Prot0("Delete: Open Connection");
+                using (var con = new OracleConnection(conString))
+                {
+                    con.Open();
 
-        } //class
+                    if (HanFound(ref data, con))
+                    {
+                        if (DokFound(ref data, con))
+                        {
+                            DokDelete(data, con);
+                            result = "OK"; 
+                        }
+                        if (DokHanCount(data, con) == 0)
+                        {
+                            //Handelsprodukt löschen wenn keine Dokumente mehr existieren
+                            HanDelete(data, con);
+                        }
+
+                    }
+                    if (result != "OK")
+                    {
+                        App.EError("E31", "Dokument nicht gefunden");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                App.EError("E09", ex.Message);
+            }
+            App.Prot0("Connection Closed");
+            return result;
+        }  //DeleteSDB
+
+    } //class
     }  //namespace

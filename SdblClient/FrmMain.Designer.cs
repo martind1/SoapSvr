@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.BtnUploadSDB = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.txtHANDELSBEZEICHNUNG = new System.Windows.Forms.TextBox();
@@ -52,6 +51,8 @@
             this.label10 = new System.Windows.Forms.Label();
             this.txtSdblFilename = new System.Windows.Forms.TextBox();
             this.BtnSdblFilename = new System.Windows.Forms.Button();
+            this.BtnLoadFromIni = new System.Windows.Forms.Button();
+            this.BtnSaveToIni = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BtnUploadSDB
@@ -237,7 +238,6 @@
             // 
             // BtnSdblFilename
             // 
-            this.BtnSdblFilename.Image = ((System.Drawing.Image)(resources.GetObject("BtnSdblFilename.Image")));
             this.BtnSdblFilename.Location = new System.Drawing.Point(534, 233);
             this.BtnSdblFilename.Name = "BtnSdblFilename";
             this.BtnSdblFilename.Size = new System.Drawing.Size(28, 23);
@@ -245,11 +245,33 @@
             this.BtnSdblFilename.UseVisualStyleBackColor = true;
             this.BtnSdblFilename.Click += new System.EventHandler(this.BtnSdblFilename_Click);
             // 
+            // BtnLoadFromIni
+            // 
+            this.BtnLoadFromIni.Location = new System.Drawing.Point(39, 409);
+            this.BtnLoadFromIni.Name = "BtnLoadFromIni";
+            this.BtnLoadFromIni.Size = new System.Drawing.Size(134, 23);
+            this.BtnLoadFromIni.TabIndex = 23;
+            this.BtnLoadFromIni.Text = "Einstellungen laden";
+            this.BtnLoadFromIni.UseVisualStyleBackColor = true;
+            this.BtnLoadFromIni.Click += new System.EventHandler(this.BtnLoadFromIni_Click);
+            // 
+            // BtnSaveToIni
+            // 
+            this.BtnSaveToIni.Location = new System.Drawing.Point(197, 409);
+            this.BtnSaveToIni.Name = "BtnSaveToIni";
+            this.BtnSaveToIni.Size = new System.Drawing.Size(146, 23);
+            this.BtnSaveToIni.TabIndex = 24;
+            this.BtnSaveToIni.Text = "Einstellungen speichern";
+            this.BtnSaveToIni.UseVisualStyleBackColor = true;
+            this.BtnSaveToIni.Click += new System.EventHandler(this.BtnSaveToIni_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.BtnSaveToIni);
+            this.Controls.Add(this.BtnLoadFromIni);
             this.Controls.Add(this.BtnSdblFilename);
             this.Controls.Add(this.txtSdblFilename);
             this.Controls.Add(this.label10);
@@ -306,6 +328,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtSdblFilename;
         private System.Windows.Forms.Button BtnSdblFilename;
+        private System.Windows.Forms.Button BtnLoadFromIni;
+        private System.Windows.Forms.Button BtnSaveToIni;
     }
 }
 

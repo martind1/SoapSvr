@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.ServiceModel.Configuration;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -94,5 +95,83 @@ namespace SdblClient
                 }
             }
         }
+
+        private static string IniFilename { get; set; } = @".\SdblClient.ini.json";
+
+        private void BtnSaveToIni_Click(object sender, EventArgs e)
+        {
+            var d = new SdbData(txtHANDELSBEZEICHNUNG.Text,
+                                                txtSPRACHE.Text,
+                                                txtDOKU_TYP.Text,
+                                                txtLOESCH_KNZ.Text,
+                                                txtINTERNET_KNZ.Text,
+                                                txtMINERAL.Text,
+                                                txtBESCHICHTUNG.Text,
+                                                txtKOERNUNG.Text,
+                                                txtSdblFilename.Text);
+            string jsonString = JsonSerializer.Serialize(d, new JsonSerializerOptions() { WriteIndented = true });
+            using (StreamWriter outputFile = new StreamWriter(IniFilename))
+            {
+                outputFile.WriteLine(jsonString);
+            }
+        }
+
+        private void BtnLoadFromIni_Click(object sender, EventArgs e)
+        {
+            var d = new SdbData();
+            using (StreamReader r = new StreamReader(IniFilename))
+            {
+                string json = r.ReadToEnd();
+                d = JsonSerializer.Deserialize<SdbData>(json);
+                txtHANDELSBEZEICHNUNG.Text = d.HANDELSBEZEICHNUNG;
+                txtSPRACHE.Text = d.SPRACHE;
+                txtDOKU_TYP.Text = d.DOKU_TYP;
+                txtLOESCH_KNZ.Text = d.LOESCH_KNZ;
+                txtINTERNET_KNZ.Text = d.INTERNET_KNZ;
+                txtMINERAL.Text = d.MINERAL;
+                txtBESCHICHTUNG.Text = d.BESCHICHTUNG;
+                txtKOERNUNG.Text = d.KOERNUNG;
+                txtSdblFilename.Text = d.SdblFilename;
+            }
+        }
     }
+
+    public class SdbData
+    {
+        public string HANDELSBEZEICHNUNG { get; set; }
+        public string SPRACHE { get; set; }
+        public string DOKU_TYP { get; set; }
+        public string LOESCH_KNZ { get; set; }
+        public string INTERNET_KNZ { get; set; }
+        public string MINERAL { get; set; }
+        public string BESCHICHTUNG { get; set; }
+        public string KOERNUNG { get; set; }
+        public string SdblFilename { get; set; }
+
+        public SdbData(string aHANDELSBEZEICHNUNG,
+                        string aSPRACHE,
+                        string aDOKU_TYP,
+                        string aLOESCH_KNZ,
+                        string aINTERNET_KNZ,
+                        string aMINERAL,
+                        string aBESCHICHTUNG,
+                        string aKOERNUNG,
+                        string aSdblFilename)
+        {
+            HANDELSBEZEICHNUNG = aHANDELSBEZEICHNUNG;
+            SPRACHE = aSPRACHE;
+            DOKU_TYP = aDOKU_TYP;
+            LOESCH_KNZ = aLOESCH_KNZ;
+            INTERNET_KNZ = aINTERNET_KNZ;
+            MINERAL = aMINERAL;
+            BESCHICHTUNG = aBESCHICHTUNG;
+            KOERNUNG = aKOERNUNG;
+            SdblFilename = aSdblFilename;
+        }
+
+        public SdbData()
+        {
+        }
+    }
+
 }
