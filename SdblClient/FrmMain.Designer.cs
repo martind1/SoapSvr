@@ -94,7 +94,8 @@
             // 
             this.txtErgebnis.Location = new System.Drawing.Point(143, 349);
             this.txtErgebnis.Name = "txtErgebnis";
-            this.txtErgebnis.Size = new System.Drawing.Size(362, 20);
+            this.txtErgebnis.ReadOnly = true;
+            this.txtErgebnis.Size = new System.Drawing.Size(385, 20);
             this.txtErgebnis.TabIndex = 4;
             // 
             // LaSoapURL
@@ -225,9 +226,9 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(24, 238);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(75, 13);
+            this.label10.Size = new System.Drawing.Size(73, 13);
             this.label10.TabIndex = 20;
-            this.label10.Text = "SDB_BASE64";
+            this.label10.Text = "PDF Filename";
             // 
             // txtSdblFilename
             // 
@@ -238,6 +239,7 @@
             // 
             // BtnSdblFilename
             // 
+            this.BtnSdblFilename.Image = global::SdblClient.Properties.Resources.OPA_LOV;
             this.BtnSdblFilename.Location = new System.Drawing.Point(534, 233);
             this.BtnSdblFilename.Name = "BtnSdblFilename";
             this.BtnSdblFilename.Size = new System.Drawing.Size(28, 23);

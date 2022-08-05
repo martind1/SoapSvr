@@ -243,7 +243,7 @@ namespace SdblDB
                     }
                     else
                     {
-                        App.EError("E32", $"Interner Fehler bei DokHanCount({data.HANDELSBEZEICHNUNG})");
+                        App.EError("E32", $"Interner Fehler bei DokHanCount({data.HANDELSBEZEICHNUNG}, {data.HSPW_ID})");
                     }
                 }
             }
@@ -270,7 +270,7 @@ namespace SdblDB
                 else
                 {
                     //update nicht erfolgt
-                    App.EError("E20", $"Interner Fehler bei DokUpdate({data.HANDELSBEZEICHNUNG}, {data.SPRACHE}, {data.DOKU_TYP})");
+                    App.EError("E20", $"Interner Fehler {rowCnt} bei DokUpdate({data.DOKW_ID}, {data.SPRACHE}, {data.DOKU_TYP})");
                 }
             }
         }
@@ -321,7 +321,7 @@ namespace SdblDB
                 else
                 {
                     //delete nicht erfolgt
-                    App.EError("E20", $"Interner Fehler bei DokDelete({data.DOKW_ID})");
+                    App.EError("E23", $"Interner Fehler {rowCnt} bei DokDelete({data.DOKW_ID})");
                 }
             }
         }
@@ -345,13 +345,17 @@ namespace SdblDB
                     else 
                         HanInsert(ref data, con);
 
+                    //if (DokFound(ref data, con))
+                    //    DokUpdate(data, con);
+                    //else
+                    //    DokInsert(ref data, con);
+                    // Bug bei QW Server TestUtf8:
                     if (DokFound(ref data, con))
-                        DokUpdate(data, con);
-                    else
-                        DokInsert(ref data, con);
+                        DokDelete(data, con);
+                    DokInsert(ref data, con);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is SoapException))
             {
                 App.EError("E09", ex.Message);
             }
@@ -386,13 +390,13 @@ namespace SdblDB
                     }
                     if (result != "OK")
                     {
-                        App.EError("E31", "Dokument nicht gefunden");
+                        App.EError("E31", "Zu löschendes Dokument nicht gefunden");
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!(ex is SoapException))
             {
-                App.EError("E09", ex.Message);
+                App.EError("E39", ex.Message);
             }
             App.Prot0("Connection Closed");
             return result;

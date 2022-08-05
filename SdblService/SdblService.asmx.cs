@@ -42,7 +42,7 @@ namespace SdblService
             string SDB_BASE64)
         {
             string s;
-            App.Prot0($"UploadSDB(Han:{HANDELSBEZEICHNUNG}, Doktyp:{DOKU_TYP})");
+            App.Prot0($"UploadSDB(Han:{HANDELSBEZEICHNUNG}, Sprache:{SPRACHE} Doktyp:{DOKU_TYP}, Löschknz:{LOESCH_KNZ})");
             if (String.IsNullOrEmpty(HANDELSBEZEICHNUNG))
             {
                 App.EError("E01", "Handelsbezeichnung darf nicht leer sein");
@@ -50,18 +50,6 @@ namespace SdblService
             if (String.IsNullOrEmpty(SPRACHE))
             {
                 App.EError("E02", "Sprache darf nicht leer sein");
-            }
-            if (String.IsNullOrEmpty(INTERNET_KNZ))
-            {
-                App.EError("E03", "Internet_knz darf nicht leer sein");
-            }
-            if (String.IsNullOrEmpty(MINERAL))
-            {
-                App.EError("E04", "Mineral darf nicht leer sein");
-            }
-            if (String.IsNullOrEmpty(BESCHICHTUNG))
-            {
-                App.EError("E05", "Beschichtung darf nicht leer sein");
             }
             if (String.IsNullOrEmpty(DOKU_TYP))
             {
@@ -71,13 +59,24 @@ namespace SdblService
             {
                 LOESCH_KNZ = "N";
             }
-            if (String.IsNullOrEmpty(SDB_BASE64))
-            {
-                if (LOESCH_KNZ != "J")
-                    App.EError("E06", "SDB_BASE64 darf nicht leer sein");
-            }
             if (LOESCH_KNZ != "J")
             {
+                if (String.IsNullOrEmpty(INTERNET_KNZ))
+                {
+                    App.EError("E03", "Internet_knz darf nicht leer sein");
+                }
+                if (String.IsNullOrEmpty(MINERAL))
+                {
+                    App.EError("E04", "Mineral darf nicht leer sein");
+                }
+                if (String.IsNullOrEmpty(BESCHICHTUNG))
+                {
+                    App.EError("E05", "Beschichtung darf nicht leer sein");
+                }
+                if (String.IsNullOrEmpty(SDB_BASE64))
+                {
+                    App.EError("E06", "SDB_BASE64 darf nicht leer sein");
+                }
                 s = Data.UploadSDB(new SdbData( HANDELSBEZEICHNUNG,
                                                 SPRACHE,
                                                 DOKU_TYP,

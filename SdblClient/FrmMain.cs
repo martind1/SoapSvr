@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
 using System.ServiceModel.Configuration;
 using System.Text;
 using System.Text.Json;
@@ -23,17 +24,13 @@ namespace SdblClient
 
         private void BtnUploadSDB_Click(object sender, EventArgs e)
         {
+            txtErgebnis.Text = "(running)";
             //Call Webservice
             using (SdblSvcRef.SdblServiceSoapClient client = new SdblSvcRef.SdblServiceSoapClient("SdblServiceSoap"))
             {
                 try
                 {
-                    //Read the contents of the file into a stream
-                    /*  var fileStream = openFileDialog.OpenFile();
-                    using (StreamReader reader = new StreamReader(fileStream))
-                    {
-                        fileContent = reader.ReadToEnd();
-                    }*/
+                    //Read the contents of the file into a Base64 string
                     byte[] buff = File.ReadAllBytes(txtSdblFilename.Text);
                     string SdblBase64 = Convert.ToBase64String(buff);
 
@@ -49,9 +46,13 @@ namespace SdblClient
                     //update the UI:
                     txtErgebnis.Text = Ergebnis;
                 }
+                catch (FaultException faultEx)
+                {
+                    txtErgebnis.Text = faultEx.Code.Name + " " + faultEx.Message;
+                }
                 catch (System.Exception ex)
                 {
-                    txtErgebnis.Text = ex.Message;
+                    txtErgebnis.Text = ex.GetType() + " - " + ex.Message;
                 }
             }
         }
@@ -65,6 +66,7 @@ namespace SdblClient
             {
                 if (ep.Name == "SdblServiceSoap")
                 {
+                    //Anzeige der Endpoint Adresse im UI:
                     LaSoapURL.Text = ep.Address.ToString();
                 }
             }
@@ -85,7 +87,7 @@ namespace SdblClient
             {
                 //openFileDialog.InitialDirectory = "c:\\";
                 openFileDialog.Filter = "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*";
-                openFileDialog.FilterIndex = 2;
+                openFileDialog.FilterIndex = 1;
                 openFileDialog.RestoreDirectory = true;
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
