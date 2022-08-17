@@ -53,6 +53,8 @@
             this.BtnSdblFilename = new System.Windows.Forms.Button();
             this.BtnLoadFromIni = new System.Windows.Forms.Button();
             this.BtnSaveToIni = new System.Windows.Forms.Button();
+            this.txtVKORG = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // BtnUploadSDB
@@ -127,7 +129,7 @@
             // 
             // txtLOESCH_KNZ
             // 
-            this.txtLOESCH_KNZ.Location = new System.Drawing.Point(166, 97);
+            this.txtLOESCH_KNZ.Location = new System.Drawing.Point(166, 122);
             this.txtLOESCH_KNZ.Name = "txtLOESCH_KNZ";
             this.txtLOESCH_KNZ.Size = new System.Drawing.Size(362, 20);
             this.txtLOESCH_KNZ.TabIndex = 11;
@@ -135,7 +137,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(24, 100);
+            this.label4.Location = new System.Drawing.Point(24, 125);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(78, 13);
             this.label4.TabIndex = 10;
@@ -143,7 +145,7 @@
             // 
             // txtDOKU_TYP
             // 
-            this.txtDOKU_TYP.Location = new System.Drawing.Point(166, 71);
+            this.txtDOKU_TYP.Location = new System.Drawing.Point(166, 96);
             this.txtDOKU_TYP.Name = "txtDOKU_TYP";
             this.txtDOKU_TYP.Size = new System.Drawing.Size(362, 20);
             this.txtDOKU_TYP.TabIndex = 9;
@@ -151,7 +153,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(24, 74);
+            this.label5.Location = new System.Drawing.Point(24, 99);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(65, 13);
             this.label5.TabIndex = 8;
@@ -159,7 +161,7 @@
             // 
             // txtKOERNUNG
             // 
-            this.txtKOERNUNG.Location = new System.Drawing.Point(166, 206);
+            this.txtKOERNUNG.Location = new System.Drawing.Point(166, 226);
             this.txtKOERNUNG.Name = "txtKOERNUNG";
             this.txtKOERNUNG.Size = new System.Drawing.Size(362, 20);
             this.txtKOERNUNG.TabIndex = 19;
@@ -167,7 +169,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(24, 209);
+            this.label6.Location = new System.Drawing.Point(24, 229);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(69, 13);
             this.label6.TabIndex = 18;
@@ -175,7 +177,7 @@
             // 
             // txtBESCHICHTUNG
             // 
-            this.txtBESCHICHTUNG.Location = new System.Drawing.Point(166, 180);
+            this.txtBESCHICHTUNG.Location = new System.Drawing.Point(166, 200);
             this.txtBESCHICHTUNG.Name = "txtBESCHICHTUNG";
             this.txtBESCHICHTUNG.Size = new System.Drawing.Size(362, 20);
             this.txtBESCHICHTUNG.TabIndex = 17;
@@ -183,7 +185,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(24, 183);
+            this.label7.Location = new System.Drawing.Point(24, 203);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(92, 13);
             this.label7.TabIndex = 16;
@@ -191,7 +193,7 @@
             // 
             // txtMINERAL
             // 
-            this.txtMINERAL.Location = new System.Drawing.Point(166, 152);
+            this.txtMINERAL.Location = new System.Drawing.Point(166, 174);
             this.txtMINERAL.Name = "txtMINERAL";
             this.txtMINERAL.Size = new System.Drawing.Size(362, 20);
             this.txtMINERAL.TabIndex = 15;
@@ -199,7 +201,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(24, 155);
+            this.label8.Location = new System.Drawing.Point(24, 177);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(55, 13);
             this.label8.TabIndex = 14;
@@ -207,7 +209,7 @@
             // 
             // txtINTERNET_KNZ
             // 
-            this.txtINTERNET_KNZ.Location = new System.Drawing.Point(166, 126);
+            this.txtINTERNET_KNZ.Location = new System.Drawing.Point(166, 148);
             this.txtINTERNET_KNZ.Name = "txtINTERNET_KNZ";
             this.txtINTERNET_KNZ.Size = new System.Drawing.Size(362, 20);
             this.txtINTERNET_KNZ.TabIndex = 13;
@@ -215,7 +217,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(24, 129);
+            this.label9.Location = new System.Drawing.Point(24, 151);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(90, 13);
             this.label9.TabIndex = 12;
@@ -224,7 +226,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(24, 238);
+            this.label10.Location = new System.Drawing.Point(24, 255);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(73, 13);
             this.label10.TabIndex = 20;
@@ -232,7 +234,7 @@
             // 
             // txtSdblFilename
             // 
-            this.txtSdblFilename.Location = new System.Drawing.Point(166, 235);
+            this.txtSdblFilename.Location = new System.Drawing.Point(166, 252);
             this.txtSdblFilename.Name = "txtSdblFilename";
             this.txtSdblFilename.Size = new System.Drawing.Size(362, 20);
             this.txtSdblFilename.TabIndex = 21;
@@ -240,9 +242,9 @@
             // BtnSdblFilename
             // 
             this.BtnSdblFilename.Image = global::SdblClient.Properties.Resources.OPA_LOV;
-            this.BtnSdblFilename.Location = new System.Drawing.Point(534, 233);
+            this.BtnSdblFilename.Location = new System.Drawing.Point(534, 252);
             this.BtnSdblFilename.Name = "BtnSdblFilename";
-            this.BtnSdblFilename.Size = new System.Drawing.Size(28, 23);
+            this.BtnSdblFilename.Size = new System.Drawing.Size(28, 20);
             this.BtnSdblFilename.TabIndex = 22;
             this.BtnSdblFilename.UseVisualStyleBackColor = true;
             this.BtnSdblFilename.Click += new System.EventHandler(this.BtnSdblFilename_Click);
@@ -267,11 +269,29 @@
             this.BtnSaveToIni.UseVisualStyleBackColor = true;
             this.BtnSaveToIni.Click += new System.EventHandler(this.BtnSaveToIni_Click);
             // 
+            // txtVKORG
+            // 
+            this.txtVKORG.Location = new System.Drawing.Point(166, 69);
+            this.txtVKORG.Name = "txtVKORG";
+            this.txtVKORG.Size = new System.Drawing.Size(362, 20);
+            this.txtVKORG.TabIndex = 26;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(24, 72);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(45, 13);
+            this.label11.TabIndex = 25;
+            this.label11.Text = "VKORG";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 443);
+            this.Controls.Add(this.txtVKORG);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.BtnSaveToIni);
             this.Controls.Add(this.BtnLoadFromIni);
             this.Controls.Add(this.BtnSdblFilename);
@@ -332,6 +352,8 @@
         private System.Windows.Forms.Button BtnSdblFilename;
         private System.Windows.Forms.Button BtnLoadFromIni;
         private System.Windows.Forms.Button BtnSaveToIni;
+        private System.Windows.Forms.TextBox txtVKORG;
+        private System.Windows.Forms.Label label11;
     }
 }
 

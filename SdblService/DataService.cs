@@ -18,6 +18,7 @@ namespace SdblDB
     {
         public string HANDELSBEZEICHNUNG;
         public string SPRACHE;
+        public string VKORG;
         public string DOKU_TYP;
         public string LOESCH_KNZ;
         public string INTERNET_KNZ;
@@ -32,6 +33,7 @@ namespace SdblDB
 
         public SdbData( string aHANDELSBEZEICHNUNG,
                         string aSPRACHE,
+                        string aVKORG,  
                         string aDOKU_TYP,
                         string aLOESCH_KNZ,
                         string aINTERNET_KNZ, 
@@ -42,6 +44,7 @@ namespace SdblDB
         {
             HANDELSBEZEICHNUNG = aHANDELSBEZEICHNUNG;
             SPRACHE = aSPRACHE;
+            VKORG = aVKORG;
             DOKU_TYP = aDOKU_TYP;
             LOESCH_KNZ = aLOESCH_KNZ;
             INTERNET_KNZ = aINTERNET_KNZ;
@@ -190,6 +193,7 @@ namespace SdblDB
 
         // ergibt true wenn Dokument in DOKUMENTE_WEB gefunden
         // ergänzt data.DOKW_ID
+        // 10.08.22 md  Key plus VkOrg
         private bool DokFound(ref SdbData data, OracleConnection con)
         {
             bool Result = false;
@@ -200,9 +204,11 @@ namespace SdblDB
                 cmd.CommandText = @"SELECT DOKW_ID from DOKUMENTE_WEB 
                                     WHERE DOKW_HSPW_ID = :HSPW_ID
                                     AND SPRACHE = :SPRACHE
+                                    AND VKORG = :VKORG
                                     AND DOKU_TYP = :DOKU_TYP";
                 cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
                 cmd.Parameters.Add(":SPRACHE", OracleDbType.Varchar2).Value = data.SPRACHE;
+                cmd.Parameters.Add(":VKORG", OracleDbType.Varchar2).Value = data.VKORG;
                 cmd.Parameters.Add(":DOKU_TYP", OracleDbType.Varchar2).Value = data.DOKU_TYP;
 
                 //cmd.ExecuteNonQuery();
@@ -257,9 +263,13 @@ namespace SdblDB
             {
                 cmd.BindByName = true;
                 cmd.CommandText = @"update DOKUMENTE_WEB 
-                                    set DOKU_DATA = :DOKU_DATA
-                                    WHERE DOKW_HSPW_ID = :DOKW_ID";
+                                    set VKORG = :VKORG,
+                                        AKTIV = :AKTIV,
+                                        DOKU_DATA = :DOKU_DATA
+                                    WHERE DOKW_ID = :DOKW_ID";
                 cmd.Parameters.Add(":DOKW_ID", OracleDbType.Double).Value = data.DOKW_ID;
+                cmd.Parameters.Add(":VKORG", OracleDbType.Varchar2).Value = data.VKORG;
+                cmd.Parameters.Add(":AKTIV", OracleDbType.Varchar2).Value = "J";
                 cmd.Parameters.Add(":DOKU_DATA", OracleDbType.Blob).Value = data.DOKU_DATA;
 
                 var rowCnt = cmd.ExecuteNonQuery();
@@ -281,11 +291,13 @@ namespace SdblDB
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.BindByName = true;
-                cmd.CommandText = @"insert into DOKUMENTE_WEB(DOKW_HSPW_ID, SPRACHE, DOKU_TYP, DOKU_DATA)
-                                    values(:HSPW_ID, :SPRACHE, :DOKU_TYP, :DOKU_DATA)";
+                cmd.CommandText = @"insert into DOKUMENTE_WEB(DOKW_HSPW_ID, SPRACHE, VKORG, AKTIV, DOKU_TYP, DOKU_DATA, BEMERKUNG)
+                                    values(:HSPW_ID, :SPRACHE, :VKORG, :AKTIV, :DOKU_TYP, :DOKU_DATA, :BEMERKUNG)";
                 cmd.Parameters.Add(":HSPW_ID", OracleDbType.Double).Value = data.HSPW_ID;
-                cmd.Parameters.Add(":DOKU_TYP", OracleDbType.Char).Value = data.DOKU_TYP;
                 cmd.Parameters.Add(":SPRACHE", OracleDbType.Varchar2).Value = data.SPRACHE;
+                cmd.Parameters.Add(":VKORG", OracleDbType.Varchar2).Value = data.VKORG;
+                cmd.Parameters.Add(":AKTIV", OracleDbType.Varchar2).Value = "J";
+                cmd.Parameters.Add(":DOKU_TYP", OracleDbType.Char).Value = data.DOKU_TYP;
                 cmd.Parameters.Add(":DOKU_DATA", OracleDbType.Blob).Value = data.DOKU_DATA;
                 cmd.Parameters.Add(":BEMERKUNG", OracleDbType.Varchar2).Value = "Insert by SdblService";
 
@@ -304,14 +316,19 @@ namespace SdblDB
         }
 
         // löscht Dokument anhand ID in DOKUMENTE_WEB 
+        // 10.08.22 md  kein Löschen; nur Aktiv=N setzen
         private void DokDelete(SdbData data, OracleConnection con)
         {
             using (OracleCommand cmd = con.CreateCommand())
             {
                 cmd.BindByName = true;
-                cmd.CommandText = @"delete from DOKUMENTE_WEB 
+                //cmd.CommandText = @"delete from DOKUMENTE_WEB 
+                //                    WHERE DOKW_ID = :DOKW_ID";
+                cmd.CommandText = @"update DOKUMENTE_WEB 
+                                    set AKTIV = :AKTIV
                                     WHERE DOKW_ID = :DOKW_ID";
                 cmd.Parameters.Add(":DOKW_ID", OracleDbType.Double).Value = data.DOKW_ID;
+                cmd.Parameters.Add(":AKTIV", OracleDbType.Varchar2).Value = "N";
 
                 var rowCnt = cmd.ExecuteNonQuery();
                 if (rowCnt > 0)
@@ -345,14 +362,14 @@ namespace SdblDB
                     else 
                         HanInsert(ref data, con);
 
-                    //if (DokFound(ref data, con))
-                    //    DokUpdate(data, con);
-                    //else
-                    //    DokInsert(ref data, con);
-                    // Bug bei QW Server TestUtf8:
                     if (DokFound(ref data, con))
-                        DokDelete(data, con);
-                    DokInsert(ref data, con);
+                        DokUpdate(data, con);
+                    else
+                        DokInsert(ref data, con);
+                    // 10.08.22 md  Fixed: Bug bei QW Server TestUtf8:
+                    //if (DokFound(ref data, con))
+                    //    DokDelete(data, con);
+                    //DokInsert(ref data, con);
                 }
             }
             catch (Exception ex) when (!(ex is SoapException))
@@ -363,7 +380,7 @@ namespace SdblDB
             return result;
         } //UploadSDB
 
-
+        //10.08.22 md  keine Delete mehr. Jetzt Löschkennzeichen
         public string DeleteSDB(SdbData data)
         {
             string result = "NOK";
@@ -379,7 +396,7 @@ namespace SdblDB
                         if (DokFound(ref data, con))
                         {
                             DokDelete(data, con);
-                            result = "OK"; 
+                            result = "OK";
                         }
                         if (DokHanCount(data, con) == 0)
                         {
@@ -403,4 +420,4 @@ namespace SdblDB
         }  //DeleteSDB
 
     } //class
-    }  //namespace
+}  //namespace

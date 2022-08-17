@@ -36,6 +36,7 @@ namespace SdblClient
 
                     string Ergebnis = client.UploadSDB(txtHANDELSBEZEICHNUNG.Text,
                                                        txtSPRACHE.Text,
+                                                       txtVKORG.Text,
                                                        txtDOKU_TYP.Text,
                                                        txtLOESCH_KNZ.Text,
                                                        txtINTERNET_KNZ.Text,
@@ -103,14 +104,15 @@ namespace SdblClient
         private void BtnSaveToIni_Click(object sender, EventArgs e)
         {
             var d = new SdbData(txtHANDELSBEZEICHNUNG.Text,
-                                                txtSPRACHE.Text,
-                                                txtDOKU_TYP.Text,
-                                                txtLOESCH_KNZ.Text,
-                                                txtINTERNET_KNZ.Text,
-                                                txtMINERAL.Text,
-                                                txtBESCHICHTUNG.Text,
-                                                txtKOERNUNG.Text,
-                                                txtSdblFilename.Text);
+                                txtSPRACHE.Text,
+                                txtVKORG.Text,
+                                txtDOKU_TYP.Text,
+                                txtLOESCH_KNZ.Text,
+                                txtINTERNET_KNZ.Text,
+                                txtMINERAL.Text,
+                                txtBESCHICHTUNG.Text,
+                                txtKOERNUNG.Text,
+                                txtSdblFilename.Text);
             string jsonString = JsonSerializer.Serialize(d, new JsonSerializerOptions() { WriteIndented = true });
             using (StreamWriter outputFile = new StreamWriter(IniFilename))
             {
@@ -127,6 +129,7 @@ namespace SdblClient
                 d = JsonSerializer.Deserialize<SdbData>(json);
                 txtHANDELSBEZEICHNUNG.Text = d.HANDELSBEZEICHNUNG;
                 txtSPRACHE.Text = d.SPRACHE;
+                txtVKORG.Text = d.VKORG;
                 txtDOKU_TYP.Text = d.DOKU_TYP;
                 txtLOESCH_KNZ.Text = d.LOESCH_KNZ;
                 txtINTERNET_KNZ.Text = d.INTERNET_KNZ;
@@ -142,6 +145,7 @@ namespace SdblClient
     {
         public string HANDELSBEZEICHNUNG { get; set; }
         public string SPRACHE { get; set; }
+        public string VKORG { get; set; }
         public string DOKU_TYP { get; set; }
         public string LOESCH_KNZ { get; set; }
         public string INTERNET_KNZ { get; set; }
@@ -150,8 +154,9 @@ namespace SdblClient
         public string KOERNUNG { get; set; }
         public string SdblFilename { get; set; }
 
-        public SdbData(string aHANDELSBEZEICHNUNG,
+        public SdbData( string aHANDELSBEZEICHNUNG,
                         string aSPRACHE,
+                        string aVKORG,
                         string aDOKU_TYP,
                         string aLOESCH_KNZ,
                         string aINTERNET_KNZ,
@@ -162,6 +167,7 @@ namespace SdblClient
         {
             HANDELSBEZEICHNUNG = aHANDELSBEZEICHNUNG;
             SPRACHE = aSPRACHE;
+            VKORG = aVKORG;
             DOKU_TYP = aDOKU_TYP;
             LOESCH_KNZ = aLOESCH_KNZ;
             INTERNET_KNZ = aINTERNET_KNZ;

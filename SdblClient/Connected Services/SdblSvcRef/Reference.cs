@@ -53,32 +53,36 @@ namespace SdblClient.SdblSvcRef {
         public string SPRACHE;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
-        public string DOKU_TYP;
+        public string VKORG;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
-        public string LOESCH_KNZ;
+        public string DOKU_TYP;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
-        public string INTERNET_KNZ;
+        public string LOESCH_KNZ;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
-        public string MINERAL;
+        public string INTERNET_KNZ;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=6)]
-        public string BESCHICHTUNG;
+        public string MINERAL;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=7)]
-        public string KOERNUNG;
+        public string BESCHICHTUNG;
         
         [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=8)]
+        public string KOERNUNG;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=9)]
         public string SDB_BASE64;
         
         public UploadSDBRequestBody() {
         }
         
-        public UploadSDBRequestBody(string HANDELSBEZEICHNUNG, string SPRACHE, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
+        public UploadSDBRequestBody(string HANDELSBEZEICHNUNG, string SPRACHE, string VKORG, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
             this.HANDELSBEZEICHNUNG = HANDELSBEZEICHNUNG;
             this.SPRACHE = SPRACHE;
+            this.VKORG = VKORG;
             this.DOKU_TYP = DOKU_TYP;
             this.LOESCH_KNZ = LOESCH_KNZ;
             this.INTERNET_KNZ = INTERNET_KNZ;
@@ -155,11 +159,12 @@ namespace SdblClient.SdblSvcRef {
             return base.Channel.UploadSDB(request);
         }
         
-        public string UploadSDB(string HANDELSBEZEICHNUNG, string SPRACHE, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
+        public string UploadSDB(string HANDELSBEZEICHNUNG, string SPRACHE, string VKORG, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
             SdblClient.SdblSvcRef.UploadSDBRequest inValue = new SdblClient.SdblSvcRef.UploadSDBRequest();
             inValue.Body = new SdblClient.SdblSvcRef.UploadSDBRequestBody();
             inValue.Body.HANDELSBEZEICHNUNG = HANDELSBEZEICHNUNG;
             inValue.Body.SPRACHE = SPRACHE;
+            inValue.Body.VKORG = VKORG;
             inValue.Body.DOKU_TYP = DOKU_TYP;
             inValue.Body.LOESCH_KNZ = LOESCH_KNZ;
             inValue.Body.INTERNET_KNZ = INTERNET_KNZ;
@@ -176,11 +181,12 @@ namespace SdblClient.SdblSvcRef {
             return base.Channel.UploadSDBAsync(request);
         }
         
-        public System.Threading.Tasks.Task<SdblClient.SdblSvcRef.UploadSDBResponse> UploadSDBAsync(string HANDELSBEZEICHNUNG, string SPRACHE, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
+        public System.Threading.Tasks.Task<SdblClient.SdblSvcRef.UploadSDBResponse> UploadSDBAsync(string HANDELSBEZEICHNUNG, string SPRACHE, string VKORG, string DOKU_TYP, string LOESCH_KNZ, string INTERNET_KNZ, string MINERAL, string BESCHICHTUNG, string KOERNUNG, string SDB_BASE64) {
             SdblClient.SdblSvcRef.UploadSDBRequest inValue = new SdblClient.SdblSvcRef.UploadSDBRequest();
             inValue.Body = new SdblClient.SdblSvcRef.UploadSDBRequestBody();
             inValue.Body.HANDELSBEZEICHNUNG = HANDELSBEZEICHNUNG;
             inValue.Body.SPRACHE = SPRACHE;
+            inValue.Body.VKORG = VKORG;
             inValue.Body.DOKU_TYP = DOKU_TYP;
             inValue.Body.LOESCH_KNZ = LOESCH_KNZ;
             inValue.Body.INTERNET_KNZ = INTERNET_KNZ;

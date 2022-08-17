@@ -33,6 +33,7 @@ namespace SdblService
         public string UploadSDB(
             string HANDELSBEZEICHNUNG,
             string SPRACHE,
+            string VKORG,
             string DOKU_TYP,
             string LOESCH_KNZ,
             string INTERNET_KNZ,
@@ -79,6 +80,7 @@ namespace SdblService
                 }
                 s = Data.UploadSDB(new SdbData( HANDELSBEZEICHNUNG,
                                                 SPRACHE,
+                                                VKORG,
                                                 DOKU_TYP,
                                                 LOESCH_KNZ,
                                                 INTERNET_KNZ,
@@ -86,10 +88,12 @@ namespace SdblService
                                                 BESCHICHTUNG,
                                                 KOERNUNG,
                                                 SDB_BASE64));
-            } else
-            {
-                s = Data.DeleteSDB(new SdbData( HANDELSBEZEICHNUNG,
+            } 
+            else 
+            { 
+                s = Data.DeleteSDB(new SdbData(HANDELSBEZEICHNUNG,
                                                 SPRACHE,
+                                                VKORG,
                                                 DOKU_TYP,
                                                 LOESCH_KNZ,
                                                 INTERNET_KNZ,
